@@ -1,0 +1,38 @@
+---
+- name: "Create {{ openethereum_sevice_name }} systemd service"
+  template:
+    src: openethereum.service.j2
+    dest: "{{ openethereum_service_dir }}/{{ openethereum_sevice_name }}.service"
+    mode: 0644
+
+- name: "Find uid of {{ openethereum_user_name }}"
+  command: "id -u {{ openethereum_user_name }}"
+  register: the_user_uid
+  #  check_mode: no # Run even in check mode, otherwise the playbook fails with --check.
+  #  changed_when: false
+  become: true
+  become_user: "{{ openethereum_user_name }}"
+
+- name: "Determine XDG_RUNTIME_DIR"
+  set_fact:
+    xdg_runtime_dir: "/run/user/{{ the_user_uid.stdout }}"
+  changed_when: false
+  become: true
+  become_user: "{{ openethereum_user_name }}"
+
+- name: "Update bashrc for {{ openethereum_user_name }}"
+  lineinfile:
+    path: "/home/{{ openethereum_user_name }}/.bashrc"
+    line: "export XDG_RUNTIME_DIR=/run/user/{{ the_user_uid.stdout }}"
+
+- name: "Start and enable {{ openethereum_sevice_name }} service"
+  become: true
+  become_user: "{{ openethereum_user_name }}"
+  environment:
+    XDG_RUNTIME_DIR: "{{ xdg_runtime_dir }}"
+  systemd:
+    scope: user
+    daemon_reload: yes
+    name: "{{ openethereum_sevice_name }}.service"
+    enabled: "{{ openethereum_service_enabled }}"
+    state: "{{ openethereum_service_state }}"

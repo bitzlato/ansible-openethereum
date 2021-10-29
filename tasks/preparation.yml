@@ -1,0 +1,32 @@
+---
+- name: "Create {{ openethereum_user_name }} user"
+  user:
+    name: "{{ openethereum_user_name }}"
+    home: "/home/{{ openethereum_user_name }}"
+    shell: /bin/bash
+    system: yes
+
+- name: "Creates directory"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ openethereum_user_name }}"
+    group: "{{ openethereum_user_name }}"
+    mode: 0755
+    recurse: yes
+  loop:
+    - "{{ openethereum_root }}"
+    - "{{ openethereum_datadir }}"
+    - "{{ openethereum_service_dir }}"
+
+- name: Enable linger for {{ openethereum_user_name }}
+  command: "loginctl enable-linger {{openethereum_user_name}}"
+
+- name: "Download pre-build binaries"
+  ansible.builtin.unarchive:
+    src: "{{ openethereum_url }}"
+    dest: "{{ openethereum_root }}"
+    owner: "{{ openethereum_user_name }}"
+    group: "{{ openethereum_user_name }}"
+    mode: 0755
+    remote_src: yes

@@ -1,0 +1,15 @@
+---
+openethereum_user_name: openethereum
+openethereum_sevice_name: openethereum
+openethereum_releases: "v3.3.0-rc.12" 
+openethereum_root: "/home/{{ openethereum_user_name }}"
+openethereum_datadir: "{{ openethereum_root}}/openethereum_db"
+openethereum_path: "{{ openethereum_root }}/openethereum"
+openethereum_service_dir: "/home/{{ openethereum_user_name }}/.config/systemd/user/"
+openethereum_url: "https://github.com/openethereum/openethereum/releases/download/{{ openethereum_releases }}/openethereum-linux-{{ openethereum_releases }}.zip"
+openethereum_httpport: 8545
+openethereum_wsport: 8546
+openethereum_ws_interface: "127.0.0.1"
+openethereum_jsonrpc_interface: "127.0.0.1"
+openethereum_service_enabled: 'No' # yes
+openethereum_service_state: 'stopped' # started
